@@ -1,4 +1,4 @@
-# Banky - Free and Open Source Exam Generation Tool and Test Bank.
+# Banky - Exam Generation Tool and Test Bank.
 
 Banky is comprised of the following components:
 
