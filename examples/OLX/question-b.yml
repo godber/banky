@@ -1,0 +1,16 @@
+label: Question or prompt text.
+description: Optional information about how to answer the question.
+figures:
+  - fig1.png
+  - fig2.png
+choices:
+  true:
+    - Correct choice
+  false:
+    - First incorrect choice
+    - Second incorrect choice
+solution:
+  - Optional description of solution.
+hint:
+  - Text for hint 1
+  - Text for hint 2
