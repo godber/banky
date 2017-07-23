@@ -12,8 +12,12 @@ from yattag import Doc, indent
 
 @click.command()
 @click.argument('file_name')
+def cli(file_name):
+    print(gen(file_name))
+
+
 def gen(file_name):
-    # Read and parse the YAML file containing the question
+    """Read and parse the YAML file containing the question"""
     try:
         f = open(file_name)
         question = yaml.safe_load(f)
@@ -21,7 +25,7 @@ def gen(file_name):
     except Exception as e:
         raise e
 
-    # print(question)
+    p = Path(file_name)
 
     # Create a list of tuples like (choice, True or False)
     choice_list = [
@@ -32,29 +36,29 @@ def gen(file_name):
 
     doc, tag, text = Doc().tagtext()
 
-    doc.asis('<!DOCTYPE html>')
-    with tag('html'):
-        with tag('body'):
-            with tag('h1'):
-                text('Question')
-            with tag('div'):
-                text(question['label'])
-            if 'figures' in question.keys():
-                with tag('div', id='photo-container'):
-                    for fig in question['figures']:
-                        doc.stag('img', src=fig, klass="photo", height='80px')
-            with tag('div', klass='choices'):
-                with tag('ol'):
-                    for (choice_text, truthiness) in sample(choice_list, k=len(choice_list)):
-                        with tag('li', klass='foo'):
-                            text(choice_text)
+    with tag('h1'):
+        text('Question - %s' % file_name)
+    with tag('div'):
+        text(question['label'])
+    if question['figures']:
+        with tag('div', id='photo-container'):
+            for fig in question['figures']:
+                # FIXME: It's a bad hack to just use the source path
+                # for the figures, the html and figures should be
+                # copied into an output directory
+                figure_path = p.parent.joinpath(fig)
+                doc.stag('img', src=str(figure_path), klass='photo', height='400px')
+    with tag('div', klass='choices'):
+        with tag('ol'):
+            for (choice_text, truthiness) in sample(choice_list, k=len(choice_list)):
+                with tag('li'):
+                    if truthiness:
+                        text(str(choice_text) + " - (CORRECT CHOICE)")
+                    else:
+                        text(str(choice_text))
 
-
-
-    print(indent(doc.getvalue()))
-
-
+    return indent(doc.getvalue())
 
 
 if __name__ == '__main__':
-    gen()
+    cli()
